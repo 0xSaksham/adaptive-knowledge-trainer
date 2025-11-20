@@ -1,10 +1,11 @@
 import React from "react";
+import "./styles/App.css";
+import TrainerDashboard from "./components/TrainerDashboard";
 
 const App: React.FC = () => {
   return (
     <div>
-      <h1>Jai Shree Ram</h1>
-      <p>Everything works perfectly!</p>
+      <TrainerDashboard />
     </div>
   );
 };
