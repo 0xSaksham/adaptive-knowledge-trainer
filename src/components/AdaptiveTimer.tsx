@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { Timer as TimerIcon, Zap } from "lucide-react";
 
 interface Props {
   skillLevel: number;
@@ -11,52 +12,61 @@ export const AdaptiveTimer: React.FC<Props> = ({
 }) => {
   const [timeLeft, setTimeLeft] = useState(60);
   const timerRef = useRef<number | null>(null);
-
-  // Calculate timer speed (The Feedback Loop Core)
-  // Higher Skill = Slower Timer (Reward)
-  // Higher Distraction = Faster Timer (Punishment)
   const tickRate = Math.max(
     100,
     1000 - distractionIndex * 10 + skillLevel * 50
   );
 
   useEffect(() => {
-    // Clear existing timer if speed needs to change
     if (timerRef.current) clearInterval(timerRef.current);
-
     timerRef.current = window.setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 0) return 60; // Reset
-        return prev - 1;
-      });
+      setTimeLeft((prev) => (prev <= 0 ? 60 : prev - 1));
     }, tickRate);
-
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [tickRate]); // ⭐ Re-runs whenever calculated speed changes
+  }, [tickRate]);
 
   return (
     <div className="card">
-      <h2>Adaptive Timer</h2>
+      <h2>
+        <TimerIcon size={20} /> Adaptive Pace
+      </h2>
+
+      <div className="timer-hero">
+        {timeLeft}
+        <span style={{ fontSize: "1rem", verticalAlign: "top" }}>s</span>
+      </div>
+
       <div
-        className="timer-display"
         style={{
-          fontSize: "3rem",
-          fontFamily: "monospace",
-          color: timeLeft < 10 ? "red" : "inherit",
+          display: "flex",
+          justifyContent: "space-between",
+          fontSize: "0.9rem",
+          opacity: 0.8,
         }}
       >
-        {timeLeft}s
+        <span>Tick Rate:</span>
+        <span style={{ fontFamily: "monospace" }}>{tickRate}ms</span>
       </div>
-      <p>
-        Current Tick Rate: <strong>{tickRate}ms</strong>
-      </p>
-      <small>
-        {distractionIndex > 30
-          ? "🚀 Speeding up due to distraction!"
-          : "🐢 Normal Pace"}
-      </small>
+
+      {distractionIndex > 30 && (
+        <div
+          style={{
+            marginTop: 10,
+            padding: 8,
+            background: "#fee2e2",
+            color: "#991b1b",
+            borderRadius: 8,
+            fontSize: "0.85rem",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <Zap size={14} /> Speeding up (High Distraction)
+        </div>
+      )}
     </div>
   );
 };
